@@ -1,4 +1,5 @@
 package company;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -16,10 +17,10 @@ import java.text.AttributedCharacterIterator;
 import java.util.Map;
 
 public class GamePanel extends JPanel implements Runnable{
-    int FPS=60;
+    int FPS=60,speed=0;
     boolean rotate=false;
-    final int screenWidth = 700;
-    final int screenHeight = 700;
+    final int screenWidth = 1200;
+    final int screenHeight = 800;
     double i=0,UFO_position_x,UFO_position_y,UFO_AngleChange=0;
 
     Thread gameThread;
@@ -64,17 +65,18 @@ public class GamePanel extends JPanel implements Runnable{
         }
     }
     public void update(){
+        speed+=3;
         if(keyH.rightKeyPressed){
             UFO_AngleChange+=2;
             //X=Xo+r*cos(theta)
             //Y=Yo+r*sin(theta)
-            UFO_position_x= (screenWidth/2)+200*Math.cos(Math.toRadians(UFO_AngleChange));
-            UFO_position_y= (screenHeight/2)+200*Math.sin(Math.toRadians(UFO_AngleChange));
+            UFO_position_x= (screenWidth/2)+300*Math.cos(Math.toRadians(UFO_AngleChange-90));
+            UFO_position_y= (screenHeight/2)+300*Math.sin(Math.toRadians(UFO_AngleChange-90));
         }
         if(keyH.leftKeyPressed){
             UFO_AngleChange-=2;
-            UFO_position_x= 100+20*Math.cos(Math.toRadians(UFO_AngleChange));
-            UFO_position_y= 100+20*Math.sin(Math.toRadians(UFO_AngleChange));
+            UFO_position_x= (screenWidth/2)+200*Math.cos(Math.toRadians(UFO_AngleChange-90));
+            UFO_position_y= (screenHeight/2)+200*Math.sin(Math.toRadians(UFO_AngleChange-90));
         }
         if(rotate==false) {
             i += 1.0;
@@ -103,35 +105,44 @@ public class GamePanel extends JPanel implements Runnable{
         } catch (IOException e) {
             e.printStackTrace();
         }
-        g2d.setColor(Color.white);
-        // g2d.translate(screenWidth/2,screenHeight/2);
-        //    g2d.fillOval(screenWidth/2-10,screenHeight/2-10,20,20);
 
+        g2d.setColor(Color.white);
+        //AffineTransform t2 = new AffineTransform();
         AffineTransform at = AffineTransform.getTranslateInstance((screenWidth/2)-(img.getWidth()/2),(screenHeight/2)-(img.getHeight()/2));
         at.rotate(Math.toRadians(i),img.getWidth()/2,img.getHeight()/2);
-
         g2d.drawImage(img,at,null);
-        g2d.setColor(Color.white);
+        //g2d.setTransform(t2);
+
+        // g2d.setColor(Color.white);
         ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+        /*
+
         //System.out.println(UFO_img.getWidth()+" "+UFO_img.getHeight());
 
-        //g2d.drawImage(UFO_img, 0, 0, this);  // Display with top-left corner at (0, 0)
+         //g2d.drawImage(UFO_img, 0, 0, this);  // Display with top-left corner at (0, 0)
 
         // drawImage() does not use the current transform of the Graphics2D context
         // Need to create a AffineTransform and pass into drawImage()
-        AffineTransform transform = new AffineTransform();  // identity transform
+             AffineTransform transform = new AffineTransform();  // identity transform
         // Display the image with its center at the initial (x, y)
-        g2d.translate(screenWidth/2 - UFO_img.getWidth()/2, screenHeight/2- UFO_img.getHeight()-150);
-        //  g2d.drawImage(UFO_img, transform, this);
-        g2d.setColor(Color.white);
-        // g2d.fillOval(0+UFO_img.getWidth()/2,0+UFO_img.getHeight()+104 ,20,20);
+            g2d.translate(screenWidth/2 - UFO_img.getWidth()/2, screenHeight/2- UFO_img.getHeight()-250);
+      //  g2d.drawImage(UFO_img, transform, this);
+           g2d.setColor(Color.white);
+       // g2d.fillOval(0+UFO_img.getWidth()/2,0+UFO_img.getHeight()+104 ,20,20);
 
-        transform.rotate(Math.toRadians(UFO_AngleChange), UFO_img.getWidth()/2, UFO_img.getHeight()+150); // about its center
+            transform.rotate(Math.toRadians(UFO_AngleChange), UFO_img.getWidth()/2, UFO_img.getHeight()+250); // about its center
 
-        //transform.scale(0.9, 0.9);
-        g2d.drawImage(UFO_img, transform, this);
-        // g2d.setTransform(transform);
+            //transform.scale(0.9, 0.9);
+            g2d.drawImage(UFO_img, transform, this);
+            //g2d.setTransform(transform);
+            g2d.setColor(Color.red);
+            g2d.fillOval((int) UFO_position_x, (int) UFO_position_y,8,8);
 
+         */
+        AffineTransform t = AffineTransform.getTranslateInstance(screenWidth/2 - UFO_img.getWidth()/2, screenHeight/2- UFO_img.getHeight()-250);
+        t.rotate(Math.toRadians(UFO_AngleChange), UFO_img.getWidth()/2, UFO_img.getHeight()+250);
+        g2d.drawImage(UFO_img,t,null);
+        g2d.fillOval((int)UFO_position_x,(int)UFO_position_y,8,8);
 
     }
 }
