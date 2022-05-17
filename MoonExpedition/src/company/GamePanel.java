@@ -16,6 +16,7 @@ public class GamePanel extends JPanel implements Runnable{
      final int screenHeight = 700;
     double i=0,UFO_position_x,UFO_position_y,UFO_AngleChange=0;
     public static final float  SHOOT_WAIT_TIME=0.3f;
+    public static final int RADIUS=250;
     float shootTimer;
     Thread gameThread;
     KeyHandler keyH=new KeyHandler();
@@ -26,7 +27,7 @@ public class GamePanel extends JPanel implements Runnable{
         this.setDoubleBuffered(true);
         this.addKeyListener(keyH);
         this.setFocusable(true);
-        //bullets=new ArrayList<Bullet>();
+
         shootTimer=0;
     }
     public void startGameTread(){
@@ -94,7 +95,7 @@ public class GamePanel extends JPanel implements Runnable{
         }
         if(keyH.spacekeyPressed){
 
-            bullets.add(new Bullet((float) 10f));
+            bullets.add(new Bullet((float) 15,(float)15,UFO_AngleChange));
            // System.out.println(bullets.size());
         }
         if(rotate==false) {
@@ -150,8 +151,8 @@ public class GamePanel extends JPanel implements Runnable{
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        AffineTransform t = AffineTransform.getTranslateInstance(screenWidth/2 - UFO_img.getWidth()/2, screenHeight/2- UFO_img.getHeight()-250);
-        t.rotate(Math.toRadians(UFO_AngleChange), UFO_img.getWidth()/2, UFO_img.getHeight()+250);
+        AffineTransform t = AffineTransform.getTranslateInstance(screenWidth/2 - UFO_img.getWidth()/2, screenHeight/2- UFO_img.getHeight()-RADIUS);
+        t.rotate(Math.toRadians(UFO_AngleChange), UFO_img.getWidth()/2, UFO_img.getHeight()+RADIUS);
         g2d.drawImage(UFO_img,t,null);
         g2d.fillOval((int)UFO_position_x,(int)UFO_position_y,8,8);
         try {
