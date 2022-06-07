@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 public class GamePanel extends JPanel implements Runnable{
     int FPS=60,speed=0,x=0,y=0,setDirX=3,setDirY=3;
@@ -15,8 +16,9 @@ public class GamePanel extends JPanel implements Runnable{
     final int screenWidth = 1000;
      final int screenHeight = 700;
     double i=0,UFO_position_x,UFO_position_y,UFO_AngleChange=0;
-    public static final float  SHOOT_WAIT_TIME=0.3f;
+    //public static final float  SHOOT_WAIT_TIME=0.3f;
     public static final int RADIUS=250;
+    public static final float WAIT_SHOOT_TIME=300;
     float shootTimer;
     Thread gameThread;
     KeyHandler keyH=new KeyHandler();
@@ -47,6 +49,12 @@ public class GamePanel extends JPanel implements Runnable{
             currentTime = System.nanoTime();
             delta+=(currentTime-lastTime)/drawnInterval;
             timer+=(currentTime-lastTime);
+           // shootTimer+= TimeUnit.NANOSECONDS.toMillis((currentTime-lastTime));
+            //converted nanosecond to millisecond
+            shootTimer+=((currentTime-lastTime)*1.0E-6);
+          //  System.out.println(shootTimer);
+
+          //  System.out.println(timer);
             lastTime = currentTime;
             if(delta>=1){
                 update();
@@ -82,30 +90,30 @@ public class GamePanel extends JPanel implements Runnable{
 //            BackgroundOffset=0;
 //        }
         if(keyH.rightKeyPressed){
-            UFO_AngleChange+=2;
+            UFO_AngleChange+=1.5;
             //X=Xo+r*cos(theta)
             //Y=Yo+r*sin(theta)
             UFO_position_x= (screenWidth/2)+200*Math.cos(Math.toRadians(UFO_AngleChange-90));
             UFO_position_y= (screenHeight/2)+200*Math.sin(Math.toRadians(UFO_AngleChange-90));
         }
         if(keyH.leftKeyPressed){
-            UFO_AngleChange-=2;
+            UFO_AngleChange-=1.5;
             UFO_position_x= (screenWidth/2)+200*Math.cos(Math.toRadians(UFO_AngleChange-90));
             UFO_position_y= (screenHeight/2)+200*Math.sin(Math.toRadians(UFO_AngleChange-90));
         }
-        if(keyH.spacekeyPressed){
-
-            bullets.add(new Bullet((float) 15,(float)15,UFO_AngleChange));
+        if(keyH.spacekeyPressed && WAIT_SHOOT_TIME<=shootTimer){
+            bullets.add(new Bullet(UFO_AngleChange));
+            shootTimer=0;
            // System.out.println(bullets.size());
         }
         if(rotate==false) {
-            i += 1.0;
+          //  i += 1.0;
             if(i>=360){
                 rotate=true;
             }
         }
         else if(rotate){
-            i-=1.1;
+           // i-=1.1;
             if(i<=-60){
                 rotate=false;
             }
@@ -138,7 +146,14 @@ public class GamePanel extends JPanel implements Runnable{
             e.printStackTrace();
         }
 
-
+        try {
+            for (Bullet bullet : bullets) {
+                bullet.ren(g);
+            }
+        }
+        catch (Exception e){
+            System.out.println("this is in the gamePanel");
+        }
         g2d.setColor(Color.white);
         //AffineTransform t2 = new AffineTransform();
         AffineTransform at = AffineTransform.getTranslateInstance((screenWidth/2)-(img.getWidth()/2),(screenHeight/2)-(img.getHeight()/2));
@@ -146,6 +161,7 @@ public class GamePanel extends JPanel implements Runnable{
         g2d.drawImage(img,at,null);
 
         g2d.drawImage(BackGround,x,y,null);
+
 
         g2d.drawImage(Meteorite1,x,y,null);
 
@@ -155,14 +171,7 @@ public class GamePanel extends JPanel implements Runnable{
         t.rotate(Math.toRadians(UFO_AngleChange), UFO_img.getWidth()/2, UFO_img.getHeight()+RADIUS);
         g2d.drawImage(UFO_img,t,null);
         g2d.fillOval((int)UFO_position_x,(int)UFO_position_y,8,8);
-        try {
-            for (Bullet bullet : bullets) {
-                bullet.ren(g);
-            }
-        }
-        catch (Exception e){
-            System.out.println("this is in the gamePanel");
-        }
+
 
     }
 }

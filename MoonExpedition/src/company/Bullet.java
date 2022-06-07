@@ -9,9 +9,9 @@ public class Bullet {
     int radius;
     // for accessing the width and height of screen//
     GamePanel gp=new GamePanel();
-    public Bullet(float x,float y,double angleOfBullet){
-        this.x=x;
-        this.y=y;
+    public Bullet(double angleOfBullet){
+       // this.x=x;
+      //  this.y=y;
         this.angleOfBullet=angleOfBullet;
         this.radius=gp.RADIUS;
     }
@@ -22,7 +22,7 @@ public class Bullet {
             remove=true;
         }
         // System.out.println(Math.abs(radius-(int)x));
-        radius-=5;
+        radius-=7;
         x= (float) (gp.screenWidth/2+radius*Math.cos(Math.toRadians(angleOfBullet-90)))-2; // 2 delete because of perfectly match with firing spot//
         y= (float) (gp.screenHeight/2+radius*Math.sin(Math.toRadians(angleOfBullet-90)))-3;
     }
