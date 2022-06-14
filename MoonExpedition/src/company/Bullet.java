@@ -22,7 +22,7 @@ public class Bullet {
             remove=true;
         }
         // System.out.println(Math.abs(radius-(int)x));
-        radius-=(7*delta);
+        radius-=(2);
         x= (float) (gp.screenWidth/2+radius*Math.cos(Math.toRadians(angleOfBullet-90)))-2; // 2 delete because of perfectly match with firing spot//
         y= (float) (gp.screenHeight/2+radius*Math.sin(Math.toRadians(angleOfBullet-90)))-3;
        // System.out.println(gp.screenHeight);

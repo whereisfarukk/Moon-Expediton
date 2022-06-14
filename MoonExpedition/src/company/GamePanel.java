@@ -18,11 +18,10 @@ public class GamePanel extends JPanel implements Runnable{
     final int screenWidth = 700;
      final int screenHeight = 700;
     double i=0,UFO_position_x,UFO_position_y,UFO_AngleChange=0,delta=0;
-    //public static final float  SHOOT_WAIT_TIME=0.3f;
     public static final int RADIUS=250;
-    public static final float WAIT_SHOOT_TIME=300;
-    public static final float MIN_ASTEROID_SPAWN_TIME=0.5f;
-    public static final float MAX_ASTEROID_SPAWN_TIME=2.0f;
+    public static final float WAIT_SHOOT_TIME=700;
+    public static final float MIN_ASTEROID_SPAWN_TIME=2.0f;
+    public static final float MAX_ASTEROID_SPAWN_TIME=3.0f;
     float shootTimer,asteroidSpawnTimer;
     Random random=new Random();
     Thread gameThread;
@@ -35,6 +34,7 @@ public class GamePanel extends JPanel implements Runnable{
         this.setDoubleBuffered(true);
         this.addKeyListener(keyH);
         this.setFocusable(true);
+        //  a asteroid spoon between the interval of min steroid spoon time and maximum steroid spoon time///
         asteroidSpawnTimer=random.nextFloat()*(MAX_ASTEROID_SPAWN_TIME-MIN_ASTEROID_SPAWN_TIME)+MIN_ASTEROID_SPAWN_TIME;
 
         shootTimer=0;
@@ -81,10 +81,6 @@ public class GamePanel extends JPanel implements Runnable{
         y+=setDirY;
 
         speed+=3;
-//        BackgroundOffset++;
-//        if(BackgroundOffset%sc                                                                                                                   reenWidth==0){
-//            BackgroundOffset=0;
-//        }
         if(keyH.rightKeyPressed){
             UFO_AngleChange+=(1.5*delta);
             //X=Xo+r*cos(theta)
@@ -104,7 +100,7 @@ public class GamePanel extends JPanel implements Runnable{
             asteroids.add(new Asteroid(random.nextInt(screenWidth)));
         }
         asteroidSpawnTimer-=(timer*4E-11);
-      //  System.out.println(timer*1E-11);
+        //System.out.println(timer*1E-11);
         //System.out.println(asteroidSpawnTimer);
         ArrayList<Asteroid>asteroidsToRemove=new ArrayList<Asteroid>();
         for(Asteroid asteroid : asteroids){
@@ -146,6 +142,7 @@ public class GamePanel extends JPanel implements Runnable{
     public void paintComponent(Graphics g){
         super.paintComponent(g);
         Graphics2D g2d=(Graphics2D)g;
+        BufferedImage moonEater=null;
         BufferedImage img=null;
         BufferedImage UFO_img=null;
         BufferedImage BackGround=null;
@@ -153,8 +150,9 @@ public class GamePanel extends JPanel implements Runnable{
         try {
             img= ImageIO.read(new File("src/assets/moon.png"));
             UFO_img=ImageIO.read(new File("src/assets/UFO.png"));
-            BackGround=ImageIO.read(new File("src/assets/BackGround.png"));
-            BackGround=ImageIO.read(new File("src/assets/Starscape01.png"));
+            //BackGround=ImageIO.read(new File("src/assets/satelite3.png"));
+            BackGround=ImageIO.read(new File("src/assets/Background.png"));
+            //moonEater=ImageIO.read(new File("src/assets/moonEater.png"));
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -170,33 +168,36 @@ public class GamePanel extends JPanel implements Runnable{
         }
         try {
             for (Asteroid asteroid : asteroids) {
+//                if(asteroid.intersects(UFO_img)){
+//                    System.out.println("intersects");
+//                }
                 asteroid.ren(g);
             }
         }
         catch (Exception e){
             System.out.println("this is in the gamePanel");
         }
-        // code for moon circulation//
+
+        //code for star background//
         g2d.drawImage(BackGround,0,0,null);
 
+        //moonEater rendering//
+        MoonEater mn=new MoonEater();
+        mn.ren(g);
+
+        // code for moon circulation//
         g2d.setColor(Color.white);
         //AffineTransform t2 = new AffineTransform();
         AffineTransform at = AffineTransform.getTranslateInstance((screenWidth/2)-(img.getWidth()/2),(screenHeight/2)-(img.getHeight()/2));
         at.rotate(Math.toRadians(i),img.getWidth()/2,img.getHeight()/2);
         g2d.drawImage(img,at,null);
 
-    //    g2d.drawImage(BackGround,x,y,null);
-
-
-//        g2d.drawImage(Meteorite1,x,y,null);
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
         //code for player UFO circulation//
-
         AffineTransform t = AffineTransform.getTranslateInstance(screenWidth/2 - UFO_img.getWidth()/2, screenHeight/2- UFO_img.getHeight()-RADIUS);
         t.rotate(Math.toRadians(UFO_AngleChange), UFO_img.getWidth()/2, UFO_img.getHeight()+RADIUS);
         g2d.drawImage(UFO_img,t,null);
         g2d.fillOval((int)UFO_position_x,(int)UFO_position_y,8,8);
+        
 
     }
 }
