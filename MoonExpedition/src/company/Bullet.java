@@ -3,6 +3,7 @@ import java.awt.*;
 
 public class Bullet {
     // public static final int DEFAULT_Y=20;
+    CollisionRect rect;
     public boolean remove=false;
     float x,y;
     double angleOfBullet;
@@ -14,6 +15,9 @@ public class Bullet {
       //  this.y=y;
         this.angleOfBullet=angleOfBullet;
         this.radius=gp.RADIUS;
+        x= (float) (gp.screenWidth/2+radius*Math.cos(Math.toRadians(angleOfBullet-90)))-2; // 2 delete because of perfectly match with firing spot//
+        y= (float) (gp.screenHeight/2+radius*Math.sin(Math.toRadians(angleOfBullet-90)))-3;
+        this.rect=new CollisionRect((int)x,(int)y,3,3);
     }
     public void update(double delta){
         // if the coordinate of x and y both cross the difference of half of screen width of and height then remove
@@ -26,6 +30,7 @@ public class Bullet {
         x= (float) (gp.screenWidth/2+radius*Math.cos(Math.toRadians(angleOfBullet-90)))-2; // 2 delete because of perfectly match with firing spot//
         y= (float) (gp.screenHeight/2+radius*Math.sin(Math.toRadians(angleOfBullet-90)))-3;
        // System.out.println(gp.screenHeight);
+        rect.move((int)x,(int)y);
 
     }
     public void ren(Graphics g){
@@ -34,7 +39,8 @@ public class Bullet {
             g2d.setColor(Color.red);
             g2d.fillOval((int) x, (int) y, 6, 6);
 
-
-
+    }
+    public CollisionRect getCollisionRect(){
+        return rect;
     }
 }

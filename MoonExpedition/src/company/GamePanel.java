@@ -28,6 +28,7 @@ public class GamePanel extends JPanel implements Runnable{
     KeyHandler keyH=new KeyHandler();
     ArrayList<Bullet> bullets=new ArrayList<Bullet>();
     ArrayList<Asteroid> asteroids=new ArrayList<Asteroid>();
+    MoonEater mn;
     public  GamePanel(){
         this.setPreferredSize(new Dimension(screenWidth,screenHeight));
         this.setBackground(Color.BLACK);
@@ -38,6 +39,7 @@ public class GamePanel extends JPanel implements Runnable{
         asteroidSpawnTimer=random.nextFloat()*(MAX_ASTEROID_SPAWN_TIME-MIN_ASTEROID_SPAWN_TIME)+MIN_ASTEROID_SPAWN_TIME;
 
         shootTimer=0;
+
     }
     public void startGameTread(){
         gameThread =new Thread(this);
@@ -84,14 +86,14 @@ public class GamePanel extends JPanel implements Runnable{
         if(keyH.rightKeyPressed){
             UFO_AngleChange+=(1.5*delta);
             //X=Xo+r*cos(theta)
-            UFO_position_x= (screenWidth/2)+200*Math.cos(Math.toRadians(UFO_AngleChange-90));
+            UFO_position_x= (screenWidth/2)+100*Math.cos(Math.toRadians(UFO_AngleChange-90));
             //Y=Yo+r*sin(theta)
-            UFO_position_y= (screenHeight/2)+200*Math.sin(Math.toRadians(UFO_AngleChange-90));
+            UFO_position_y= (screenHeight/2)+100*Math.sin(Math.toRadians(UFO_AngleChange-90));
         }
         if(keyH.leftKeyPressed){
             UFO_AngleChange-=(1.5*delta);
-            UFO_position_x= (screenWidth/2)+200*Math.cos(Math.toRadians(UFO_AngleChange-90));
-            UFO_position_y= (screenHeight/2)+200*Math.sin(Math.toRadians(UFO_AngleChange-90));
+            UFO_position_x= (screenWidth/2)+280*Math.cos(Math.toRadians(UFO_AngleChange-90));
+            UFO_position_y= (screenHeight/2)+280*Math.sin(Math.toRadians(UFO_AngleChange-90));
         }
 
 
@@ -136,6 +138,14 @@ public class GamePanel extends JPanel implements Runnable{
                 }
             }
             bullets.removeAll(bulletsToRemove);
+
+            for(Bullet bullet:bullets){
+//                System.out.println(bullet.getCollisionRect().x+" "+bullet.getCollisionRect().y+"  "+mn.getCollisionRect().x+" "
+//                +mn.getCollisionRect().y);
+                if(bullet.getCollisionRect().intersects(mn.getCollisionRect())){
+                    System.out.println("collied");
+                }
+            }
 
     }
 
@@ -182,7 +192,7 @@ public class GamePanel extends JPanel implements Runnable{
         g2d.drawImage(BackGround,0,0,null);
 
         //moonEater rendering//
-        MoonEater mn=new MoonEater();
+        mn=new MoonEater();
         mn.ren(g);
 
         // code for moon circulation//
@@ -197,7 +207,7 @@ public class GamePanel extends JPanel implements Runnable{
         t.rotate(Math.toRadians(UFO_AngleChange), UFO_img.getWidth()/2, UFO_img.getHeight()+RADIUS);
         g2d.drawImage(UFO_img,t,null);
         g2d.fillOval((int)UFO_position_x,(int)UFO_position_y,8,8);
-        
+
 
     }
 }

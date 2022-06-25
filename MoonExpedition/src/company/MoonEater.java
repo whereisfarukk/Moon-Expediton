@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 public class MoonEater {
+    CollisionRect rect;
     BufferedImage moonEater=null;
     GamePanel gp=new GamePanel();
     public MoonEater(){
@@ -14,6 +15,8 @@ public class MoonEater {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+        this.rect=new CollisionRect(333,253,40,40);
+
     }
     public void update(double delta){
 
@@ -27,8 +30,11 @@ public class MoonEater {
 //        g2d.drawImage((Image)texture,at,null);
      //   g2d.drawImage(moonEater,30,30,null);\
         AffineTransform t = AffineTransform.getTranslateInstance(gp.screenWidth/2 - moonEater.getWidth()/2, gp.screenHeight/2- moonEater.getHeight()-97);
-        t.rotate(Math.toRadians(30), moonEater.getWidth()/2, moonEater.getHeight()+97);
+        t.rotate(Math.toRadians(0), moonEater.getWidth()/2, moonEater.getHeight()+97);
         g2d.drawImage(moonEater,t,null);
 
+    }
+    public CollisionRect getCollisionRect(){
+        return rect;
     }
 }
