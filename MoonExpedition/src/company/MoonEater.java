@@ -15,7 +15,7 @@ public class MoonEater {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        this.rect=new CollisionRect(333,253,40,40);
+        this.rect=new CollisionRect(587,180,40,40);
 
     }
     public void update(double delta){
@@ -29,8 +29,8 @@ public class MoonEater {
 //        at.rotate(Math.toRadians(i++),texture.getWidth(),texture.getHeight());
 //        g2d.drawImage((Image)texture,at,null);
      //   g2d.drawImage(moonEater,30,30,null);\
-        AffineTransform t = AffineTransform.getTranslateInstance(gp.screenWidth/2 - moonEater.getWidth()/2, gp.screenHeight/2- moonEater.getHeight()-97);
-        t.rotate(Math.toRadians(0), moonEater.getWidth()/2, moonEater.getHeight()+97);
+        AffineTransform t = AffineTransform.getTranslateInstance((gp.screenWidth/2)+100 - moonEater.getWidth()/2, gp.screenHeight/2- moonEater.getHeight()-92);
+        t.rotate(Math.toRadians(0), moonEater.getWidth()/2, moonEater.getHeight()+92);
         g2d.drawImage(moonEater,t,null);
 
     }

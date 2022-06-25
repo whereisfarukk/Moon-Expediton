@@ -18,8 +18,8 @@ public class Asteroid {
     int choose=0,i=0;
     Random random=new Random();
     GamePanel gp=new GamePanel();
-    public Asteroid(float x){
-        this.x=x;
+    public Asteroid(float y){
+        this.y=y;
           choose=random.nextInt(5);
         // System.out.println(choose);
           if(texture==null){
@@ -45,31 +45,31 @@ public class Asteroid {
               }
 
           }
-          if(x+texture.getWidth()> gp.screenWidth) {
-              this.x = x - texture.getWidth();// so that asteroid does not spoon on out of the screen//
+          if(y+texture.getHeight()> gp.screenHeight) {
+              this.y = y - texture.getHeight();// so that asteroid does not spoon on out of the screen//
           }
-        this.y=-texture.getHeight() ;
+        this.x=-texture.getWidth(); //initially the asteroid spoon before the screen width//
     }
     public void update(double delta){
         if(choose==0){
-            y+=SPEED+3;
+            x+=SPEED+3;
         }
         else if(choose==1){
-            y+=SPEED+2;
+            x+=SPEED+2;
         }
         else if(choose==2){
-            y+=SPEED;
+            x+=SPEED;
         }
 
         else if(choose==3){
-            y+=SPEED+4;
+            x+=SPEED+4;
         }
 
         else if(choose==4){
-            y+=SPEED+1;
+            x+=SPEED+1;
         }
        // y+=SPEED;
-        if(y> gp.screenHeight){
+        if(x> gp.screenWidth){
             remove=true;
         }
     }

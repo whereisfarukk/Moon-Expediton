@@ -27,14 +27,13 @@ public class Bullet {
         }
         // System.out.println(Math.abs(radius-(int)x));
         radius-=(2);
-        x= (float) (gp.screenWidth/2+radius*Math.cos(Math.toRadians(angleOfBullet-90)))-2; // 2 delete because of perfectly match with firing spot//
+        x= (float) ((gp.screenWidth/2)+100+radius*Math.cos(Math.toRadians(angleOfBullet-90)))-2; // 2 delete because of perfectly match with firing spot//
         y= (float) (gp.screenHeight/2+radius*Math.sin(Math.toRadians(angleOfBullet-90)))-3;
        // System.out.println(gp.screenHeight);
         rect.move((int)x,(int)y);
 
     }
     public void ren(Graphics g){
-            //Graphics g=new Graphics();;
             Graphics2D g2d = (Graphics2D) g;
             g2d.setColor(Color.red);
             g2d.fillOval((int) x, (int) y, 6, 6);
