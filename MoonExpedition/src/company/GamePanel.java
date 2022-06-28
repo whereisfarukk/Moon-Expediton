@@ -4,14 +4,19 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+import java.awt.geom.Area;
+
 
 public class GamePanel extends JPanel implements Runnable{
+    //int temp1,temp2;
+  //  boolean flag=true;
     long timer;
     int FPS=60,speed=0,x=0,y=0,setDirX=3,setDirY=3;
     boolean rotate=false;
@@ -19,7 +24,7 @@ public class GamePanel extends JPanel implements Runnable{
      final int screenHeight = 550;
     double i=0,UFO_position_x,UFO_position_y,UFO_AngleChange=0,delta=0;
     public static final int RADIUS=230;
-    public static final float WAIT_SHOOT_TIME=700;
+    public static final float WAIT_SHOOT_TIME=700;//700
     public static final float MIN_ASTEROID_SPAWN_TIME=4.0f;//2.0f
     public static final float MAX_ASTEROID_SPAWN_TIME=5.0f;//3.0f
     float shootTimer,asteroidSpawnTimer;
@@ -137,16 +142,19 @@ public class GamePanel extends JPanel implements Runnable{
                     bulletsToRemove.add(bullet);
                 }
             }
+           // Area a=mn.getCollisionsArea();
             bullets.removeAll(bulletsToRemove);
-
-            for(Bullet bullet:bullets){
+           // if(flag) {
+                for (Bullet bullet : bullets) {
 //                System.out.println(bullet.getCollisionRect().x+" "+bullet.getCollisionRect().y+"  "+mn.getCollisionRect().x+" "
 //                +mn.getCollisionRect().y);
-                if(bullet.getCollisionRect().intersects(mn.getCollisionRect())){
-                    System.out.println("collied");
+                    bullet.getCollisionArea().intersect(mn.getCollisionsArea()) ;
+                    if(!bullet.getCollisionArea().isEmpty()){
+                        System.out.println("collied");
+                        System.out.println(bullet.x+" "+bullet.y);
+                    }
                 }
-            }
-
+          //  }
     }
 
     public void paintComponent(Graphics g){
@@ -158,10 +166,10 @@ public class GamePanel extends JPanel implements Runnable{
         BufferedImage BackGround=null;
         BufferedImage Meteorite1=null;
         try {
-            img= ImageIO.read(new File("src/assets/Moon.png"));
-            UFO_img=ImageIO.read(new File("src/assets/UFO.png"));
+            img= ImageIO.read(new File("src/assets/photos/Moon.png"));
+            UFO_img=ImageIO.read(new File("src/assets/photos/UFO.png"));
             //BackGround=ImageIO.read(new File("src/assets/satelite3.png"));
-            BackGround=ImageIO.read(new File("src/assets/Background.png"));
+            BackGround=ImageIO.read(new File("src/assets/photos/Background.png"));
             //moonEater=ImageIO.read(new File("src/assets/moonEater.png"));
 
         } catch (IOException e) {
@@ -194,7 +202,7 @@ public class GamePanel extends JPanel implements Runnable{
         //moonEater rendering//
         mn=new MoonEater();
         mn.ren(g);
-
+      //  mn.update((int) i);
         // code for moon circulation//
         g2d.setColor(Color.white);
         //AffineTransform t2 = new AffineTransform();
@@ -206,7 +214,25 @@ public class GamePanel extends JPanel implements Runnable{
         AffineTransform t = AffineTransform.getTranslateInstance((screenWidth/2)+100 - UFO_img.getWidth()/2, screenHeight/2- UFO_img.getHeight()-RADIUS);
         t.rotate(Math.toRadians(UFO_AngleChange), UFO_img.getWidth()/2, UFO_img.getHeight()+RADIUS);
         g2d.drawImage(UFO_img,t,null);
-       // g2d.fillOval((int)UFO_position_x,(int)UFO_position_y,8,8);
+        //g2d.fillOval(587,180,3,3);
+
+//
+//       Rectangle rect01 = new Rectangle(0, 0, 20, 20);
+//
+//        AffineTransform t1 = new AffineTransform();
+//
+//        //int center = screenWidth / 2;
+//
+//        t1.translate((screenWidth/2)+100-(rect01.width/2),(screenHeight/2)-rect01.height-100 );
+//        t1.rotate(Math.toRadians(0), rect01.width / 2, rect01.height+100);
+//        GeneralPath path1 = new GeneralPath();
+//        path1.append(rect01.getPathIterator(t1), true);
+//        g2d.fill(path1);
+//
+//        g2d.setColor(Color.BLUE);
+//        g2d.draw(path1.getBounds());
+        g2d.setColor(Color.red);
+        g2d.fill(mn.a1);
 
 
     }

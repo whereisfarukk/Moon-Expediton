@@ -25,19 +25,19 @@ public class Asteroid {
           if(texture==null){
               try {
                   if(choose==0) {
-                      texture = ImageIO.read(new File("src/assets/meteorite1.png"));
+                      texture = ImageIO.read(new File("src/assets/photos/meteorite1.png"));
                   }
                   else if(choose==1){
-                      texture = ImageIO.read(new File("src/assets/asteroid2.png"));
+                      texture = ImageIO.read(new File("src/assets/photos/asteroid2.png"));
                   }
                   else if(choose==2){
-                      texture = ImageIO.read(new File("src/assets/asteroid3.png"));
+                      texture = ImageIO.read(new File("src/assets/photos/asteroid3.png"));
                   }
                   else if(choose==3){
-                      texture = ImageIO.read(new File("src/assets/satelite.png"));
+                      texture = ImageIO.read(new File("src/assets/photos/satelite.png"));
                   }
                   else if(choose==4){
-                      texture = ImageIO.read(new File("src/assets/satelite2.png"));
+                      texture = ImageIO.read(new File("src/assets/photos/satelite2.png"));
                   }
 
               } catch (IOException e) {
@@ -76,11 +76,12 @@ public class Asteroid {
     public void ren(Graphics g){
         //Graphics g=new Graphics();;
         Graphics2D g2d = (Graphics2D) g;
-        g2d.drawImage((Image) texture, (int) x, (int) y,null);
+       // g2d.drawImage((Image) texture, (int) x, (int) y,null);
 //
-//        AffineTransform at = AffineTransform.getTranslateInstance(x,y);
-//        at.rotate(Math.toRadians(i++),texture.getWidth(),texture.getHeight());
-//        g2d.drawImage((Image)texture,at,null);
+        AffineTransform at = AffineTransform.getTranslateInstance(x,y);
+        i+=3;
+        at.rotate(Math.toRadians(i),texture.getWidth()/2,texture.getHeight()/2);
+        g2d.drawImage((Image)texture,at,null);
 
 
     }
