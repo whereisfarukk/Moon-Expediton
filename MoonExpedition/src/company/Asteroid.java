@@ -14,53 +14,54 @@ public class Asteroid {
     AffineTransform t2;
     CollisionRect rect;
     Area a2;
-    public boolean remove=false;
-    float x,y;
-    public static final int SPEED=1;
-    public static final int WIDTH=16;
+    public boolean remove = false;
+    float x, y;
+    int choose, i = 0;
+    public static final int SPEED = 1;
     //private static TexturePaint texture;
-    BufferedImage texture=null;
-    int choose=0,i=0;
-    Random random=new Random();
-    GamePanel gp=new GamePanel();
-    public Asteroid(float y){
-        this.y=y;
-          choose=random.nextInt(5);
-        // System.out.println(choose);
-          if(texture==null){
-              try {
-                  if(choose==0) {
-                      texture = ImageIO.read(new File("src/assets/photos/meteorite1.png"));
-                  }
-                  else if(choose==1){
-                      texture = ImageIO.read(new File("src/assets/photos/asteroid2.png"));
-                  }
-                  else if(choose==2){
-                      texture = ImageIO.read(new File("src/assets/photos/asteroid3.png"));
-                  }
-                  else if(choose==3){
-                      texture = ImageIO.read(new File("src/assets/photos/satelite.png"));
-                  }
-                  else if(choose==4){
-                      texture = ImageIO.read(new File("src/assets/photos/satelite2.png"));
-                  }
+    BufferedImage texture = null;
+    Random random = new Random();
+    GamePanel gp = new GamePanel();
 
-              } catch (IOException e) {
-                  throw new RuntimeException(e);
-              }
+    public Asteroid(float y) {
+        this.y = y;
+        choose = random.nextInt(5);
+        if (texture == null) {
+            try {
+                if (choose == 0) {
+                    texture = ImageIO.read(new File("src/assets/photos/meteorite1.png"));
+                } else if (choose == 1) {
+                    texture = ImageIO.read(new File("src/assets/photos/asteroid2.png"));
+                } else if (choose == 2) {
+                    texture = ImageIO.read(new File("src/assets/photos/asteroid3.png"));
+                } else if (choose == 3) {
+                    texture = ImageIO.read(new File("src/assets/photos/satelite.png"));
+                } else if (choose == 4) {
+                    texture = ImageIO.read(new File("src/assets/photos/satelite2.png"));
+                }
 
-          }
-          if(y+texture.getHeight()> gp.screenHeight) {
-              this.y = y - texture.getHeight();// so that asteroid does not spoon on out of the screen//
-          }
-        this.x=-texture.getWidth(); //initially the asteroid spoon before the screen width//
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
 
-        this.rect=new CollisionRect(0,0,texture.getWidth(),texture.getHeight());
+        }
+        /**
+         * Deducting texture height,so that asteroid does not spoon on out of the screen
+         */
+        if (y + texture.getHeight() > gp.screenHeight) {
+            this.y = y - texture.getHeight();
+        }
+        /**
+         * initially the asteroid spoon before the screen width
+         */
+        this.x = -texture.getWidth();
+
+        this.rect = new CollisionRect(0, 0, texture.getWidth(), texture.getHeight());
 
         t2 = new AffineTransform();
 
         //int center = screenWidth / 2;
-        AffineTransform at = AffineTransform.getTranslateInstance((int)x,(int)y);
+        AffineTransform at = AffineTransform.getTranslateInstance((int) x, (int) y);
 
 
         // t2.translate((int)x,(int)this.y);
@@ -70,55 +71,42 @@ public class Asteroid {
         a2 = new Area(path3);
 
     }
-    public void update(){
-        if(choose==0){
-            x+=SPEED;
-        }
-        else if(choose==1){
-            x+=SPEED;
-        }
-        else if(choose==2){
-            x+=SPEED;
-        }
 
-        else if(choose==3){
-            x+=SPEED;
+    public void update() {
+        if (choose == 0) {
+            x += SPEED;
+        } else if (choose == 1) {
+            x += SPEED;
+        } else if (choose == 2) {
+            x += SPEED;
+        } else if (choose == 3) {
+            x += SPEED;
+        } else if (choose == 4) {
+            x += SPEED;
         }
-
-        else if(choose==4){
-            x+=SPEED;
+        if (x > gp.screenWidth) {
+            remove = true;
         }
-       // y+=SPEED;
-        if(x> gp.screenWidth){
-            remove=true;
-        }
-
-        //this.rect=new CollisionRect(0,0,texture.getWidth(),texture.getHeight());
 
         t2 = new AffineTransform();
 
-        //int center = screenWidth / 2;
-        AffineTransform at = AffineTransform.getTranslateInstance((int)x,(int)y);
+        AffineTransform at = AffineTransform.getTranslateInstance((int) x, (int) y);
 
-
-        // t2.translate((int)x,(int)y);
-        //t1.rotate(Math.toRadians(0), rect.width / 2, rect.height+96);
         GeneralPath path3 = new GeneralPath();
         path3.append(rect.getPathIterator(at), true);
         a2 = new Area(path3);
     }
-    public void ren(Graphics g){
-        //Graphics g=new Graphics();;
-        Graphics2D g2d = (Graphics2D) g;
-        // g2d.drawImage((Image) texture, (int) x, (int) y,null);
 
-        AffineTransform at = AffineTransform.getTranslateInstance(x,y);
-        i+=3;
-        at.rotate(Math.toRadians(i),texture.getWidth()/2,texture.getHeight()/2);
-        g2d.drawImage((Image)texture,at,null);
+    public void ren(Graphics g) {
+        Graphics2D g2d = (Graphics2D) g;
+        AffineTransform at = AffineTransform.getTranslateInstance(x, y);
+        i += 3;
+        at.rotate(Math.toRadians(i), texture.getWidth() / 2, texture.getHeight() / 2);
+        g2d.drawImage((Image) texture, at, null);
 
     }
-    public Area getCollisionArea(){
+
+    public Area getCollisionArea() {
         return a2;
     }
 

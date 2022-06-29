@@ -10,7 +10,7 @@ class Main {
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setResizable(false);
         window.setTitle("Moon Expedition");
-        GamePanel gamePanel=new GamePanel();
+        GamePanel gamePanel = new GamePanel();
         window.add(gamePanel);
 
         window.addMouseListener(new MouseAdapter() {
@@ -25,7 +25,6 @@ class Main {
         window.setLocationRelativeTo(null);
         window.setVisible(true);
         gamePanel.startGameTread();
-
 
 
     }
