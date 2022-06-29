@@ -3,12 +3,17 @@ package company;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
+import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Random;
 
 public class Asteroid {
+    AffineTransform t2;
+    CollisionRect rect;
+    Area a2;
     public boolean remove=false;
     float x,y;
     public static final int SPEED=1;
@@ -49,40 +54,73 @@ public class Asteroid {
               this.y = y - texture.getHeight();// so that asteroid does not spoon on out of the screen//
           }
         this.x=-texture.getWidth(); //initially the asteroid spoon before the screen width//
+
+        this.rect=new CollisionRect(0,0,texture.getWidth(),texture.getHeight());
+
+        t2 = new AffineTransform();
+
+        //int center = screenWidth / 2;
+        AffineTransform at = AffineTransform.getTranslateInstance((int)x,(int)y);
+
+
+        // t2.translate((int)x,(int)this.y);
+        //t1.rotate(Math.toRadians(0), rect.width / 2, rect.height+96);
+        GeneralPath path3 = new GeneralPath();
+        path3.append(rect.getPathIterator(at), true);
+        a2 = new Area(path3);
+
     }
-    public void update(double delta){
+    public void update(){
         if(choose==0){
-            x+=SPEED+3;
+            x+=SPEED;
         }
         else if(choose==1){
-            x+=SPEED+2;
+            x+=SPEED;
         }
         else if(choose==2){
             x+=SPEED;
         }
 
         else if(choose==3){
-            x+=SPEED+4;
+            x+=SPEED;
         }
 
         else if(choose==4){
-            x+=SPEED+1;
+            x+=SPEED;
         }
        // y+=SPEED;
         if(x> gp.screenWidth){
             remove=true;
         }
+
+        //this.rect=new CollisionRect(0,0,texture.getWidth(),texture.getHeight());
+
+        t2 = new AffineTransform();
+
+        //int center = screenWidth / 2;
+        AffineTransform at = AffineTransform.getTranslateInstance((int)x,(int)y);
+
+
+        // t2.translate((int)x,(int)y);
+        //t1.rotate(Math.toRadians(0), rect.width / 2, rect.height+96);
+        GeneralPath path3 = new GeneralPath();
+        path3.append(rect.getPathIterator(at), true);
+        a2 = new Area(path3);
     }
     public void ren(Graphics g){
         //Graphics g=new Graphics();;
         Graphics2D g2d = (Graphics2D) g;
-       // g2d.drawImage((Image) texture, (int) x, (int) y,null);
-//
+        // g2d.drawImage((Image) texture, (int) x, (int) y,null);
+
         AffineTransform at = AffineTransform.getTranslateInstance(x,y);
         i+=3;
         at.rotate(Math.toRadians(i),texture.getWidth()/2,texture.getHeight()/2);
         g2d.drawImage((Image)texture,at,null);
 
-
     }
+    public Area getCollisionArea(){
+        return a2;
+    }
+
+
 }

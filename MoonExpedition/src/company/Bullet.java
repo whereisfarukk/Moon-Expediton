@@ -24,15 +24,14 @@ public class Bullet {
         y= (float) (gp.screenHeight/2+radius*Math.sin(Math.toRadians(angleOfBullet-90)))-3;
         this.rect=new CollisionRect(0,0,6,6);
         at = new AffineTransform();
-        at.translate(x, y);
+        at.translate((int)x,(int) y);
         GeneralPath path2 = new GeneralPath();
         path2.append(rect.getPathIterator(at), true);
         a = new Area(path2);
 
 
-
     }
-    public void update(double delta){
+    public void update(){
         // if the coordinate of x and y both cross the difference of half of screen width of and height then remove
         // that bullet//
         if(Math.abs(radius-(int)x)>(gp.screenWidth/2)-4 && Math.abs(radius-(int)y)>(gp.screenHeight/2)-4){
@@ -44,12 +43,12 @@ public class Bullet {
         y= (float) (gp.screenHeight/2+radius*Math.sin(Math.toRadians(angleOfBullet-90)))-3;
        // System.out.println(gp.screenHeight);
        // rect.move((int)x,(int)y);
+       // this.rect=new CollisionRect(0,0,6,6);
         at = new AffineTransform();
         at.translate((int)x, (int)y);
         GeneralPath path2 = new GeneralPath();
         path2.append(rect.getPathIterator(at), true);
         a = new Area(path2);
-
 
     }
     public void ren(Graphics g){
