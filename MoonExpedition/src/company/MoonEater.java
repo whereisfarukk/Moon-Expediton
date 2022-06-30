@@ -19,6 +19,7 @@ public class MoonEater {
     BufferedImage moonEater = null;
 
     GamePanel gp = new GamePanel();
+
     public MoonEater() {
         try {
             moonEater = ImageIO.read(new File("src/assets/photos/moonEater.png"));

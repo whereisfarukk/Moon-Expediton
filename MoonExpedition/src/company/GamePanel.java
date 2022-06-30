@@ -1,6 +1,10 @@
 package company;
 
 import javax.imageio.ImageIO;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
@@ -22,7 +26,9 @@ public class GamePanel extends JPanel implements Runnable {
     MoonEater ME;
     long timer;
     int FPS = 60, speed = 0, x = 0, y = 0, setDirX = 3, setDirY = 3;
-    int score;
+    int score = 0;
+    int playerLife = 3;
+    final int playerMaxLife = 3;
     boolean rotate = false;
     final int screenWidth = 1000;
     final int screenHeight = 550;
@@ -38,6 +44,10 @@ public class GamePanel extends JPanel implements Runnable {
     Thread gameThread;
     ArrayList<Bullet> bullets = new ArrayList<Bullet>();
     ArrayList<Asteroid> asteroids = new ArrayList<Asteroid>();
+    BufferedImage FullHeart = null;
+    BufferedImage BlankHeart = null;
+
+    Sound sound = new Sound();
 
     public GamePanel() {
         this.setPreferredSize(new Dimension(screenWidth, screenHeight));
@@ -54,7 +64,7 @@ public class GamePanel extends JPanel implements Runnable {
 
         shootTimer = 0;
         moonEaterSpawnTimer = 0;
-        score = 0;
+        //score = 0;
 
     }
 
@@ -135,9 +145,9 @@ public class GamePanel extends JPanel implements Runnable {
                 asteroidsToRemove.add(asteroid);
             }
         }
-        asteroids.removeAll(asteroidsToRemove);
 
         if (keyH.spaceKeyPressed && WAIT_SHOOT_TIME <= shootTimer) {
+            playSE(1);
             bullets.add(new Bullet(UFO_AngleChange));
             shootTimer = 0;
         }
@@ -170,6 +180,7 @@ public class GamePanel extends JPanel implements Runnable {
         for (Bullet bullet : bullets) {
             bullet.getCollisionArea().intersect(ME.getCollisionsArea());
             if (!bullet.getCollisionArea().isEmpty()) {
+                playSE(2);
                 bulletsToRemove.add(bullet);
                 /**
                  * When the player able to shot moon eater ,it will disappear
@@ -194,9 +205,15 @@ public class GamePanel extends JPanel implements Runnable {
         for (Asteroid asteroid : asteroids) {
             asteroid.getCollisionArea().intersect(area);
             if (!asteroid.getCollisionArea().isEmpty()) {
+                // stopMusic();
+                playSE(3);
+                asteroidsToRemove.add(asteroid);
                 System.out.println("collied");
+                playerLife--;
             }
         }
+        asteroids.removeAll(asteroidsToRemove);
+
 
     }
 
@@ -214,7 +231,8 @@ public class GamePanel extends JPanel implements Runnable {
             //BackGround=ImageIO.read(new File("src/assets/satelite3.png"));
             BackGround = ImageIO.read(new File("src/assets/photos/Background.png"));
             //moonEater=ImageIO.read(new File("src/assets/moonEater.png"));
-
+            FullHeart = ImageIO.read(new File("src/assets/photos/life/heart_full.png"));
+            BlankHeart = ImageIO.read(new File("src/assets/photos/life/heart_blank.png"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -297,5 +315,42 @@ public class GamePanel extends JPanel implements Runnable {
             throw new RuntimeException(e);
         }
 
+        //  g2d.drawImage(FullHeart,26,30,40,40,null);
+        // g2d.drawImage(BlankHeart,0,0,null);
+        drawPlayerLife(g, playerLife);
+
+    }
+
+    public void drawPlayerLife(Graphics g, int playerCurrentLife) {
+        int w = 26, h = 30;
+        int i = 0;
+        while (i < playerMaxLife) {
+            g.drawImage(BlankHeart, w, h, 40, 40, null);
+            w += 40;
+            i++;
+        }
+        w = 26;
+        h = 30;
+        i = 0;
+        while (i < playerCurrentLife) {
+            g.drawImage(FullHeart, w, h, 40, 40, null);
+            w += 40;
+            i++;
+        }
+    }
+
+    public void playMusic(int i) {
+        sound.setFile(i);
+        sound.play();
+        sound.loop();
+    }
+
+    public void stopMusic() {
+        sound.stop();
+    }
+
+    public void playSE(int i) {
+        sound.setFile(i);
+        sound.play();
     }
 }

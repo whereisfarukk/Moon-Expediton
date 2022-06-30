@@ -24,6 +24,9 @@ class Main {
         window.pack();
         window.setLocationRelativeTo(null);
         window.setVisible(true);
+//        GamePanel gm=new GamePanel();
+//        gm.playMusic(4);
+
         gamePanel.startGameTread();
 
 
