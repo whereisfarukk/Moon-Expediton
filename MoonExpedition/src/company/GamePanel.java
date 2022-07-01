@@ -7,6 +7,7 @@ import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.GeneralPath;
@@ -35,10 +36,11 @@ public class GamePanel extends JPanel implements Runnable {
     double i = 0, UFO_position_x, UFO_position_y, UFO_AngleChange = 0, delta = 0;
     public static final int RADIUS = 230;
     public static final float WAIT_SHOOT_TIME = 700;//700
-    public static final float WAIT_MOON_EATER_SPAWN_TIME = 2500;
+    public static final float WAIT_MOON_EATER_SPAWN_TIME = 3200;
     public static final float MIN_ASTEROID_SPAWN_TIME = 2.0f;//2.0f
     public static final float MAX_ASTEROID_SPAWN_TIME = 3.0f;//3.0f
     float shootTimer, asteroidSpawnTimer, moonEaterSpawnTimer;
+    static int spoonAngleOfME;
     Random random = new Random();
     KeyHandler keyH = new KeyHandler();
     Thread gameThread;
@@ -66,6 +68,12 @@ public class GamePanel extends JPanel implements Runnable {
         moonEaterSpawnTimer = 0;
         //score = 0;
 
+    }
+
+    public void setupGame() {
+        ME = new MoonEater();
+
+        System.out.println(1);
     }
 
     public void startGameTread() {
@@ -152,12 +160,12 @@ public class GamePanel extends JPanel implements Runnable {
             shootTimer = 0;
         }
         if (rotate == false) {
-            i += 1.0;
+            i += 0.3;
             if (i >= 360) {
                 rotate = true;
             }
         } else if (rotate) {
-            i -= 1.1;
+            i -= 0.5;
             if (i <= -60) {
                 rotate = false;
             }
@@ -166,9 +174,18 @@ public class GamePanel extends JPanel implements Runnable {
             /**
              *  When the time is over ,moon eater appear randomly in any place
              */
-            ME.update(random.nextInt(360));
+            spoonAngleOfME=random.nextInt(360);
+            ME.update(spoonAngleOfME);
             moonEaterSpawnTimer = 0;
         }
+        else {
+            /**
+             * Moon eater rotate along with the moon.
+             * ME will rotate a head start of spooning angle of ME
+             */
+            ME.update((int) i+spoonAngleOfME);
+        }
+
         ArrayList<Bullet> bulletsToRemove = new ArrayList<Bullet>();
         for (Bullet bullet : bullets) {
             bullet.update();
@@ -188,7 +205,8 @@ public class GamePanel extends JPanel implements Runnable {
                  * And moonEaterSpawnTimer will set to 0 ,so that next spoon gets the same waiting
                  * time
                  */
-                ME.update(random.nextInt(360));
+                spoonAngleOfME=random.nextInt(360);
+                ME.update(spoonAngleOfME);
                 score += 10;
                 moonEaterSpawnTimer = 0;
             }
@@ -267,12 +285,12 @@ public class GamePanel extends JPanel implements Runnable {
         /**
          *  Moon Eater Rendering
          */
-        ME = new MoonEater();
+        // ME = new MoonEater();
         g2d.setColor(Color.red);
         /**
          * Visual representation of Moon Eater collision area
          */
-        //g2d.fill(ME.a1);
+       // g2d.fill(ME.a1);
         ME.ren(g);
 
 
