@@ -37,8 +37,8 @@ public class GamePanel extends JPanel implements Runnable {
     public static final int RADIUS = 230;
     public static final float WAIT_SHOOT_TIME = 700;//700
     public static final float WAIT_MOON_EATER_SPAWN_TIME = 3200;
-    public static final float MIN_ASTEROID_SPAWN_TIME = 3.0f;//2.0f
-    public static final float MAX_ASTEROID_SPAWN_TIME = 4.0f;//3.0f
+    public static final float MIN_ASTEROID_SPAWN_TIME = 2.0f;//2.0f
+    public static final float MAX_ASTEROID_SPAWN_TIME = 3.0f;//3.0f
     public int gameState;
     public int gameOverCommand = 0;
     public int gameTitleCommand = 0;
@@ -242,94 +242,104 @@ public class GamePanel extends JPanel implements Runnable {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
         if (titleState == gameState) {
-            drawTitleScreen((Graphics2D) g);
-        } else {
-            BufferedImage BackGround = null;
-            try {
-                BackGround = ImageIO.read(new File("src/assets/photos/Background.png"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            drawTitleScreen(g2d);
+        } else if (gameState == pauseState) {
+            drawMainGameScreen(g2d);
+            g2d.setColor(new Color(0, 0, 0, 150));
+            g2d.fillRect(0, 0, this.screenWidth, this.screenHeight);
 
-            try {
-                for (Bullet bullet : bullets) {
-                    bullet.ren(g2d);
-                }
-            } catch (Exception e) {
-                System.out.println("this is in the gamePanel");
+        } else {
+
+            drawMainGameScreen(g2d);
+        }
+
+    }
+
+    public void drawMainGameScreen(Graphics2D g2d) {
+        BufferedImage BackGround = null;
+        try {
+            BackGround = ImageIO.read(new File("src/assets/photos/Background.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            for (Bullet bullet : bullets) {
+                bullet.ren(g2d);
             }
-            try {
-                for (Asteroid asteroid : asteroids) {
-                    asteroid.ren(g);
-                    /**
-                     *  VISUAL REPRESENTATION OF THE COLLISION AREA OF ASTEROID
-                     */
+        } catch (Exception e) {
+            System.out.println("this is in the gamePanel");
+        }
+        try {
+            for (Asteroid asteroid : asteroids) {
+                asteroid.ren(g2d);
+                /**
+                 *  VISUAL REPRESENTATION OF THE COLLISION AREA OF ASTEROID
+                 */
 //                g2d.setColor(Color.red);
 //                g2d.fill(asteroid.a2);
 
-                }
-            } catch (Exception e) {
-                System.out.println("this is in the gamePanel");
             }
-
-            /**
-             *  Code for Starry background
-             */
-            g2d.drawImage(BackGround, 0, 0, null);
-
-
-            /**
-             *  Moon Eater Rendering
-             */
-            // ME = new MoonEater();
-            g2d.setColor(Color.red);
-            /**
-             * Visual representation of Moon Eater collision area
-             */
-            //g2d.fill(ME.a1);
-            ME.ren(g, this);
-
-
-            /**
-             * Moon Circulation Rendering
-             */
-            g2d.setColor(Color.white);
-            //AffineTransform t2 = new AffineTransform();
-            AffineTransform at = AffineTransform.getTranslateInstance((screenWidth / 2) + 100 - (img.getWidth() / 2), (screenHeight / 2) - (img.getHeight() / 2));
-            at.rotate(Math.toRadians(i), img.getWidth() / 2, img.getHeight() / 2);
-            g2d.drawImage(img, at, null);
-
-
-            /**
-             * Visual representation of UFO collision area
-             */
-            g2d.setColor(Color.red);
-            //g2d.fill(area);
-
-
-            /**
-             * UFO circulation Rendering
-             */
-            player.draw(g2d);
-
-
-            /**
-             * Displaying 8-bit image for score
-             */
-            drawScoreScreen(g2d);
-            /**
-             * Displaying player life
-             */
-            drawPlayerLife(g, playerLife);
-
-            /**
-             * Displaying Game over screen on top of main game screen
-             */
-            if (gameState == gameOverState) {
-                drawGameOverScreen(g);
-            }
+        } catch (Exception e) {
+            System.out.println("this is in the gamePanel");
         }
 
+        /**
+         *  Code for Starry background
+         */
+        g2d.drawImage(BackGround, 0, 0, null);
+
+
+        /**
+         *  Moon Eater Rendering
+         */
+        // ME = new MoonEater();
+        g2d.setColor(Color.red);
+        /**
+         * Visual representation of Moon Eater collision area
+         */
+        //g2d.fill(ME.a1);
+        ME.ren(g2d, this);
+
+
+        /**
+         * Moon Circulation Rendering
+         */
+        g2d.setColor(Color.white);
+        //AffineTransform t2 = new AffineTransform();
+        AffineTransform at = AffineTransform.getTranslateInstance((screenWidth / 2) + 100 - (img.getWidth() / 2), (screenHeight / 2) - (img.getHeight() / 2));
+        at.rotate(Math.toRadians(i), img.getWidth() / 2, img.getHeight() / 2);
+        g2d.drawImage(img, at, null);
+
+
+        /**
+         * Visual representation of UFO collision area
+         */
+        g2d.setColor(Color.red);
+        //g2d.fill(area);
+
+
+        /**
+         * UFO circulation Rendering
+         */
+        player.draw(g2d);
+
+
+        /**
+         * Displaying 8-bit image for score
+         */
+        drawScoreScreen(g2d);
+        /**
+         * Displaying player life
+         */
+        drawPlayerLife(g2d, playerLife);
+
+        /**
+         * Displaying Game over screen on top of main game screen
+         */
+        if (gameState == gameOverState) {
+            drawGameOverScreen(g2d);
+        }
     }
 
     public void drawScoreScreen(Graphics2D g2d) {
@@ -348,8 +358,8 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
-    public void drawGameOverScreen(Graphics g) {
-        Graphics2D g2d = (Graphics2D) g;
+    public void drawGameOverScreen(Graphics2D g2d) {
+        // Graphics2D g2d = (Graphics2D) g;
         g2d.setColor(new Color(0, 0, 0, 200));
         g2d.fillRect(0, 0, this.screenWidth, this.screenHeight);
 
@@ -357,7 +367,7 @@ public class GamePanel extends JPanel implements Runnable {
             pixelMplus = Font.createFont(Font.TRUETYPE_FONT, new File("src/assets/fonts/PixelMplus10-Regular.ttf")).deriveFont(90f);
             g2d.setFont(pixelMplus);
             String Text = "GAME OVER";
-            int w = g.getFontMetrics().stringWidth(Text);
+            int w = g2d.getFontMetrics().stringWidth(Text);
             // int h = g.getFontMetrics().stringHeight(Text);
             g2d.setColor(new Color(27, 30, 35));
             g2d.drawString(Text, this.screenWidth / 2 - w / 2, this.screenHeight / 2 - 90);
@@ -368,7 +378,7 @@ public class GamePanel extends JPanel implements Runnable {
             pixelMplus = Font.createFont(Font.TRUETYPE_FONT, new File("src/assets/fonts/PixelMplus10-Regular.ttf")).deriveFont(45f);
             g2d.setFont(pixelMplus);
             Text = "Retry";
-            w = g.getFontMetrics().stringWidth(Text);
+            w = g2d.getFontMetrics().stringWidth(Text);
             g2d.setColor(new Color(27, 30, 35));
             g2d.drawString(Text, this.screenWidth / 2 - w / 2, this.screenHeight / 2 - 30);
             g2d.setColor(Color.white);
@@ -473,11 +483,11 @@ public class GamePanel extends JPanel implements Runnable {
 
     }
 
-    public void drawPlayerLife(Graphics g, int playerCurrentLife) {
+    public void drawPlayerLife(Graphics2D g2d, int playerCurrentLife) {
         int w = 26, h = 30;
         int i = 0;
         while (i < playerMaxLife) {
-            g.drawImage(BlankHeart, w, h, 40, 40, null);
+            g2d.drawImage(BlankHeart, w, h, 40, 40, null);
             w += 40;
             i++;
         }
@@ -485,7 +495,7 @@ public class GamePanel extends JPanel implements Runnable {
         h = 30;
         i = 0;
         while (i < playerCurrentLife) {
-            g.drawImage(FullHeart, w, h, 40, 40, null);
+            g2d.drawImage(FullHeart, w, h, 40, 40, null);
             w += 40;
             i++;
         }

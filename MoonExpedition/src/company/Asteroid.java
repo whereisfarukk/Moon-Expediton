@@ -97,8 +97,7 @@ public class Asteroid {
         a2 = new Area(path3);
     }
 
-    public void ren(Graphics g) {
-        Graphics2D g2d = (Graphics2D) g;
+    public void ren(Graphics2D g2d) {
         AffineTransform at = AffineTransform.getTranslateInstance(x, y);
         i += 3;
         at.rotate(Math.toRadians(i), texture.getWidth() / 2, texture.getHeight() / 2);

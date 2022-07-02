@@ -14,18 +14,9 @@ class Main {
         GamePanel gamePanel = new GamePanel();
         window.add(gamePanel);
 
-//        window.addMouseListener(new MouseAdapter() {
-//            @Override
-//            public void mousePressed(MouseEvent e) {
-//                System.out.println(e.getX() + "," + e.getY());
-//            }
-//        });
-
         window.pack();
         window.setLocationRelativeTo(null);
         window.setVisible(true);
-//        GamePanel gm=new GamePanel();
-//        gm.playMusic(4);
         gamePanel.setupGame();
         gamePanel.startGameTread();
 

@@ -52,7 +52,7 @@ public class MoonEater {
          */
         this.x = i;
     }
-    public void ren(Graphics g,GamePanel gp) {
+    public void ren(Graphics2D g2d,GamePanel gp) {
         //MOON EATER COLLISION AREA CIRCULATE
 
         t1 = new AffineTransform();
@@ -63,7 +63,7 @@ public class MoonEater {
         a1 = new Area(path1);
 
 
-        Graphics2D g2d = (Graphics2D) g;
+       // Graphics2D g2d = (Graphics2D) g;
         AffineTransform t = AffineTransform.getTranslateInstance((gp.screenWidth / 2) + 100 - moonEater.getWidth() / 2, gp.screenHeight / 2 - moonEater.getHeight() - 92);
         t.rotate(Math.toRadians(x), moonEater.getWidth() / 2, moonEater.getHeight() + 92);
         g2d.drawImage(moonEater, t, null);

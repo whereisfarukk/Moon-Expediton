@@ -16,7 +16,6 @@ public class Player {
     int y;
     public Player(GamePanel gp) {
         this.gp=gp;
-//        this.KeyH=keyH;
         this.x=gp.setDirX;
         this.y=gp.setDirY;
         getPlayerImage();
