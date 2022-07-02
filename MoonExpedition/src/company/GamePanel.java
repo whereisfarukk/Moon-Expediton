@@ -37,17 +37,27 @@ public class GamePanel extends JPanel implements Runnable {
     public static final int RADIUS = 230;
     public static final float WAIT_SHOOT_TIME = 700;//700
     public static final float WAIT_MOON_EATER_SPAWN_TIME = 3200;
-    public static final float MIN_ASTEROID_SPAWN_TIME = 2.0f;//2.0f
-    public static final float MAX_ASTEROID_SPAWN_TIME = 3.0f;//3.0f
+    public static final float MIN_ASTEROID_SPAWN_TIME = 3.0f;//2.0f
+    public static final float MAX_ASTEROID_SPAWN_TIME = 4.0f;//3.0f
+    public int gameState;
+    public int gameOverCommand = 0;
+    public int gameTitleCommand = 0;
+    public final int titleState = 0;
+    public final int playState = 1;
+    public final int pauseState = 2;
+    public final int gameOverState = 3;
     float shootTimer, asteroidSpawnTimer, moonEaterSpawnTimer;
     static int spoonAngleOfME;
     Random random = new Random();
-    KeyHandler keyH = new KeyHandler();
+    Player player = new Player(this);
+
+    KeyHandler keyH = new KeyHandler(this, player);
     Thread gameThread;
     ArrayList<Bullet> bullets = new ArrayList<Bullet>();
     ArrayList<Asteroid> asteroids = new ArrayList<Asteroid>();
     BufferedImage FullHeart = null;
     BufferedImage BlankHeart = null;
+    BufferedImage img = null;
 
     Sound sound = new Sound();
 
@@ -70,10 +80,17 @@ public class GamePanel extends JPanel implements Runnable {
 
     }
 
-    public void setupGame() {
+    public void setupGame() throws IOException {
+
         ME = new MoonEater();
 
-        System.out.println(1);
+        img = ImageIO.read(new File("src/assets/photos/Moon.png"));
+        FullHeart = ImageIO.read(new File("src/assets/photos/life/heart_full.png"));
+        BlankHeart = ImageIO.read(new File("src/assets/photos/life/heart_blank.png"));
+        gameState = titleState;
+
+        playMusic(4);
+        //System.out.println(1);
     }
 
     public void startGameTread() {
@@ -117,120 +134,106 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     public void update() {
-        x += setDirX;
-        y += setDirY;
+        if (gameState == playState) {
+            player.update();
 
-        speed += 3;
-        if (keyH.rightKeyPressed) {
-            UFO_AngleChange += (1.5);
-            /**
-             *  X=Xo+r*cos(theta)
-             */
-            UFO_position_x = (screenWidth / 2) + 100 * Math.cos(Math.toRadians(UFO_AngleChange - 90));
-            /**
-             *  Y=Yo+r*sin(theta)
-             */
-            UFO_position_y = (screenHeight / 2) + 100 * Math.sin(Math.toRadians(UFO_AngleChange - 90));
-        }
-        if (keyH.leftKeyPressed) {
-            UFO_AngleChange -= (1.5);
-            UFO_position_x = (screenWidth / 2) + 280 * Math.cos(Math.toRadians(UFO_AngleChange - 90));
-            UFO_position_y = (screenHeight / 2) + 280 * Math.sin(Math.toRadians(UFO_AngleChange - 90));
-        }
-
-
-        if (asteroidSpawnTimer <= 0) {
-            asteroidSpawnTimer = random.nextFloat() * (MAX_ASTEROID_SPAWN_TIME - MIN_ASTEROID_SPAWN_TIME) + MIN_ASTEROID_SPAWN_TIME;
-            asteroids.add(new Asteroid(random.nextInt(screenHeight)));
-        }
-        asteroidSpawnTimer -= (timer * 4E-11);
-        //System.out.println(timer*1E-11);
-        //System.out.println(asteroidSpawnTimer);
-        ArrayList<Asteroid> asteroidsToRemove = new ArrayList<Asteroid>();
-        for (Asteroid asteroid : asteroids) {
-            asteroid.update();
-            if (asteroid.remove) {
-                asteroidsToRemove.add(asteroid);
+            if (asteroidSpawnTimer <= 0) {
+                asteroidSpawnTimer = random.nextFloat() * (MAX_ASTEROID_SPAWN_TIME - MIN_ASTEROID_SPAWN_TIME) + MIN_ASTEROID_SPAWN_TIME;
+                asteroids.add(new Asteroid(random.nextInt(screenHeight)));
             }
-        }
-
-        if (keyH.spaceKeyPressed && WAIT_SHOOT_TIME <= shootTimer) {
-            playSE(1);
-            bullets.add(new Bullet(UFO_AngleChange));
-            shootTimer = 0;
-        }
-        if (rotate == false) {
-            i += 0.3;
-            if (i >= 360) {
-                rotate = true;
+            asteroidSpawnTimer -= (timer * 4E-11);
+            //System.out.println(timer*1E-11);
+            //System.out.println(asteroidSpawnTimer);
+            ArrayList<Asteroid> asteroidsToRemove = new ArrayList<Asteroid>();
+            for (Asteroid asteroid : asteroids) {
+                asteroid.update();
+                if (asteroid.remove) {
+                    asteroidsToRemove.add(asteroid);
+                }
             }
-        } else if (rotate) {
-            i -= 0.5;
-            if (i <= -60) {
-                rotate = false;
-            }
-        }
-        if (WAIT_MOON_EATER_SPAWN_TIME <= moonEaterSpawnTimer) {
-            /**
-             *  When the time is over ,moon eater appear randomly in any place
-             */
-            spoonAngleOfME=random.nextInt(360);
-            ME.update(spoonAngleOfME);
-            moonEaterSpawnTimer = 0;
-        }
-        else {
-            /**
-             * Moon eater rotate along with the moon.
-             * ME will rotate a head start of spooning angle of ME
-             */
-            ME.update((int) i+spoonAngleOfME);
-        }
 
-        ArrayList<Bullet> bulletsToRemove = new ArrayList<Bullet>();
-        for (Bullet bullet : bullets) {
-            bullet.update();
-            if (bullet.remove) {
-                bulletsToRemove.add(bullet);
+            if (keyH.spaceKeyPressed && WAIT_SHOOT_TIME <= shootTimer) {
+                playSE(1);
+                bullets.add(new Bullet(UFO_AngleChange));
+                shootTimer = 0;
             }
-        }
-
-        for (Bullet bullet : bullets) {
-            bullet.getCollisionArea().intersect(ME.getCollisionsArea());
-            if (!bullet.getCollisionArea().isEmpty()) {
-                playSE(2);
-                bulletsToRemove.add(bullet);
+            if (rotate == false) {
+                i += 0.3;
+                if (i >= 360) {
+                    rotate = true;
+                }
+            } else if (rotate) {
+                i -= 0.5;
+                if (i <= -60) {
+                    rotate = false;
+                }
+            }
+            if (WAIT_MOON_EATER_SPAWN_TIME <= moonEaterSpawnTimer) {
                 /**
-                 * When the player able to shot moon eater ,it will disappear
-                 * and spoon another place.
-                 * And moonEaterSpawnTimer will set to 0 ,so that next spoon gets the same waiting
-                 * time
+                 *  When the time is over ,moon eater appear randomly in any place
                  */
-                spoonAngleOfME=random.nextInt(360);
+                spoonAngleOfME = random.nextInt(360);
                 ME.update(spoonAngleOfME);
-                score += 10;
                 moonEaterSpawnTimer = 0;
+            } else {
+                /**
+                 * Moon eater rotate along with the moon.
+                 * ME will rotate a head start with spooning angle of ME
+                 */
+                ME.update((int) i + spoonAngleOfME);
             }
-        }
-        bullets.removeAll(bulletsToRemove);
 
-        ellipse = new Ellipse2D.Double(0, 0, 91, 22);
-        AffineTransform t1 = new AffineTransform();
-        t1.translate((screenWidth / 2) + 100 - (ellipse.width / 2), (screenHeight / 2) - ellipse.height - RADIUS - 8);
-        t1.rotate(Math.toRadians(UFO_AngleChange), ellipse.width / 2, ellipse.height + RADIUS + 8);
-        GeneralPath path1 = new GeneralPath();
-        path1.append(ellipse.getPathIterator(t1), true);
-        area = new Area(path1);
-        for (Asteroid asteroid : asteroids) {
-            asteroid.getCollisionArea().intersect(area);
-            if (!asteroid.getCollisionArea().isEmpty()) {
-                // stopMusic();
-                playSE(3);
-                asteroidsToRemove.add(asteroid);
-                System.out.println("collied");
-                playerLife--;
+            ArrayList<Bullet> bulletsToRemove = new ArrayList<Bullet>();
+            for (Bullet bullet : bullets) {
+                bullet.update();
+                if (bullet.remove) {
+                    bulletsToRemove.add(bullet);
+                }
             }
+
+            for (Bullet bullet : bullets) {
+                bullet.getCollisionArea().intersect(ME.getCollisionsArea());
+                if (!bullet.getCollisionArea().isEmpty()) {
+                    playSE(2);
+                    bulletsToRemove.add(bullet);
+                    /**
+                     * When the player able to shot moon eater ,it will disappear
+                     * and spoon another place.
+                     * And moonEaterSpawnTimer will set to 0 ,so that next spoon gets the same waiting
+                     * time
+                     */
+                    spoonAngleOfME = random.nextInt(360);
+                    ME.update(spoonAngleOfME);
+                    score += 10;
+                    moonEaterSpawnTimer = 0;
+                }
+            }
+            bullets.removeAll(bulletsToRemove);
+
+            ellipse = new Ellipse2D.Double(0, 0, 91, 22);
+            AffineTransform t1 = new AffineTransform();
+            t1.translate((screenWidth / 2) + 100 - (ellipse.width / 2), (screenHeight / 2) - ellipse.height - RADIUS - 8);
+            t1.rotate(Math.toRadians(UFO_AngleChange), ellipse.width / 2, ellipse.height + RADIUS + 8);
+            GeneralPath path1 = new GeneralPath();
+            path1.append(ellipse.getPathIterator(t1), true);
+            area = new Area(path1);
+            for (Asteroid asteroid : asteroids) {
+                asteroid.getCollisionArea().intersect(area);
+                if (!asteroid.getCollisionArea().isEmpty()) {
+                    // stopMusic();
+                    playSE(3);
+                    asteroidsToRemove.add(asteroid);
+                    System.out.println("collied");
+                    playerLife--;
+                    if (playerLife < 3) {
+                        gameState = gameOverState;
+                    }
+                }
+            }
+            asteroids.removeAll(asteroidsToRemove);
+        } else if (gameState == pauseState) {
+
         }
-        asteroids.removeAll(asteroidsToRemove);
 
 
     }
@@ -238,104 +241,212 @@ public class GamePanel extends JPanel implements Runnable {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
-        BufferedImage moonEater = null;
-        BufferedImage img = null;
-        BufferedImage UFO_img = null;
-        BufferedImage BackGround = null;
-        BufferedImage Meteorite1 = null;
-        try {
-            img = ImageIO.read(new File("src/assets/photos/Moon.png"));
-            UFO_img = ImageIO.read(new File("src/assets/photos/UFO.png"));
-            //BackGround=ImageIO.read(new File("src/assets/satelite3.png"));
-            BackGround = ImageIO.read(new File("src/assets/photos/Background.png"));
-            //moonEater=ImageIO.read(new File("src/assets/moonEater.png"));
-            FullHeart = ImageIO.read(new File("src/assets/photos/life/heart_full.png"));
-            BlankHeart = ImageIO.read(new File("src/assets/photos/life/heart_blank.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            for (Bullet bullet : bullets) {
-                bullet.ren(g);
+        if (titleState == gameState) {
+            drawTitleScreen((Graphics2D) g);
+        } else {
+            BufferedImage BackGround = null;
+            try {
+                BackGround = ImageIO.read(new File("src/assets/photos/Background.png"));
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            System.out.println("this is in the gamePanel");
-        }
-        try {
-            for (Asteroid asteroid : asteroids) {
-                asteroid.ren(g);
-                /**
-                 *  VISUAL REPRESENTATION OF THE COLLISION AREA OF ASTEROID
-                 */
+
+            try {
+                for (Bullet bullet : bullets) {
+                    bullet.ren(g2d);
+                }
+            } catch (Exception e) {
+                System.out.println("this is in the gamePanel");
+            }
+            try {
+                for (Asteroid asteroid : asteroids) {
+                    asteroid.ren(g);
+                    /**
+                     *  VISUAL REPRESENTATION OF THE COLLISION AREA OF ASTEROID
+                     */
 //                g2d.setColor(Color.red);
 //                g2d.fill(asteroid.a2);
 
+                }
+            } catch (Exception e) {
+                System.out.println("this is in the gamePanel");
             }
-        } catch (Exception e) {
-            System.out.println("this is in the gamePanel");
+
+            /**
+             *  Code for Starry background
+             */
+            g2d.drawImage(BackGround, 0, 0, null);
+
+
+            /**
+             *  Moon Eater Rendering
+             */
+            // ME = new MoonEater();
+            g2d.setColor(Color.red);
+            /**
+             * Visual representation of Moon Eater collision area
+             */
+            //g2d.fill(ME.a1);
+            ME.ren(g, this);
+
+
+            /**
+             * Moon Circulation Rendering
+             */
+            g2d.setColor(Color.white);
+            //AffineTransform t2 = new AffineTransform();
+            AffineTransform at = AffineTransform.getTranslateInstance((screenWidth / 2) + 100 - (img.getWidth() / 2), (screenHeight / 2) - (img.getHeight() / 2));
+            at.rotate(Math.toRadians(i), img.getWidth() / 2, img.getHeight() / 2);
+            g2d.drawImage(img, at, null);
+
+
+            /**
+             * Visual representation of UFO collision area
+             */
+            g2d.setColor(Color.red);
+            //g2d.fill(area);
+
+
+            /**
+             * UFO circulation Rendering
+             */
+            player.draw(g2d);
+//        AffineTransform t = AffineTransform.getTranslateInstance((screenWidth / 2) + 100 - UFO_img.getWidth() / 2, screenHeight / 2 - UFO_img.getHeight() - RADIUS);
+//        t.rotate(Math.toRadians(UFO_AngleChange), UFO_img.getWidth() / 2, UFO_img.getHeight() + RADIUS);
+//        g2d.drawImage(UFO_img, t, null);
+
+
+            /**
+             * Displaying 8-bit image for score
+             */
+            try {
+                pixelMplus = Font.createFont(Font.TRUETYPE_FONT, new File("src/assets/fonts/PixelMplus10-Regular.ttf")).deriveFont(32f);
+                g2d.setFont(pixelMplus);
+                String SCORE = Integer.toString(score);
+                g2d.setColor(Color.white);
+                g2d.drawString("SCORE : " + SCORE, 26, 30);
+
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
+            drawPlayerLife(g, playerLife);
+            if (gameState == gameOverState) {
+                drawGameOverScreen(g);
+            }
         }
 
-        /**
-         *  Code for Starry background
-         */
-        g2d.drawImage(BackGround, 0, 0, null);
+    }
 
+    public void drawGameOverScreen(Graphics g) {
+        Graphics2D g2d = (Graphics2D) g;
+        g2d.setColor(new Color(0, 0, 0, 200));
+        g2d.fillRect(0, 0, this.screenWidth, this.screenHeight);
 
-        /**
-         *  Moon Eater Rendering
-         */
-        // ME = new MoonEater();
-        g2d.setColor(Color.red);
-        /**
-         * Visual representation of Moon Eater collision area
-         */
-       // g2d.fill(ME.a1);
-        ME.ren(g);
-
-
-        /**
-         * Moon Circulation Rendering
-         */
-        g2d.setColor(Color.white);
-        //AffineTransform t2 = new AffineTransform();
-        AffineTransform at = AffineTransform.getTranslateInstance((screenWidth / 2) + 100 - (img.getWidth() / 2), (screenHeight / 2) - (img.getHeight() / 2));
-        at.rotate(Math.toRadians(i), img.getWidth() / 2, img.getHeight() / 2);
-        g2d.drawImage(img, at, null);
-
-
-        /**
-         * Visual representation of UFO collision area
-         */
-        g2d.setColor(Color.red);
-        //g2d.fill(area);
-
-
-        /**
-         * UFO circulation Rendering
-         */
-        AffineTransform t = AffineTransform.getTranslateInstance((screenWidth / 2) + 100 - UFO_img.getWidth() / 2, screenHeight / 2 - UFO_img.getHeight() - RADIUS);
-        t.rotate(Math.toRadians(UFO_AngleChange), UFO_img.getWidth() / 2, UFO_img.getHeight() + RADIUS);
-        g2d.drawImage(UFO_img, t, null);
-
-
-        /**
-         * Displaying 8-bit image for score
-         */
         try {
-            pixelMplus = Font.createFont(Font.TRUETYPE_FONT, new File("src/assets/fonts/PixelMplus10-Regular.ttf")).deriveFont(32f);
+            pixelMplus = Font.createFont(Font.TRUETYPE_FONT, new File("src/assets/fonts/PixelMplus10-Regular.ttf")).deriveFont(90f);
             g2d.setFont(pixelMplus);
-            String SCORE = Integer.toString(score);
+            String Text = "GAME OVER";
+            int w = g.getFontMetrics().stringWidth(Text);
+            // int h = g.getFontMetrics().stringHeight(Text);
+            g2d.setColor(new Color(27, 30, 35));
+            g2d.drawString(Text, this.screenWidth / 2 - w / 2, this.screenHeight / 2 - 90);
             g2d.setColor(Color.white);
-            g2d.drawString("SCORE : " + SCORE, 26, 30);
+            g2d.drawString(Text, this.screenWidth / 2 - w / 2 - 4, this.screenHeight / 2 - 90 - 4);
+
+
+            pixelMplus = Font.createFont(Font.TRUETYPE_FONT, new File("src/assets/fonts/PixelMplus10-Regular.ttf")).deriveFont(50f);
+            g2d.setFont(pixelMplus);
+            Text = "Retry";
+            w = g.getFontMetrics().stringWidth(Text);
+            g2d.setColor(new Color(27, 30, 35));
+            g2d.drawString(Text, this.screenWidth / 2 - w / 2, this.screenHeight / 2 - 30);
+            g2d.setColor(Color.white);
+            g2d.drawString(Text, this.screenWidth / 2 - w / 2 - 4, this.screenHeight / 2 - 30 - 4);
+            if (gameOverCommand == 0) {
+                g2d.drawString(">", this.screenWidth / 2 - w / 2 - 40, this.screenHeight / 2 - 30);
+            }
+
+
+            pixelMplus = Font.createFont(Font.TRUETYPE_FONT, new File("src/assets/fonts/PixelMplus10-Regular.ttf")).deriveFont(50f);
+            g2d.setFont(pixelMplus);
+            Text = "Quit";
+            //    w = g.getFontMetrics().stringWidth(Text);
+            g2d.setColor(new Color(27, 30, 35));
+            g2d.drawString(Text, this.screenWidth / 2 - w / 2, this.screenHeight / 2 + 20);
+            g2d.setColor(Color.white);
+            g2d.drawString(Text, this.screenWidth / 2 - w / 2 - 4, this.screenHeight / 2 + 20 - 4);
+            if (gameOverCommand == 1) {
+                g2d.drawString(">", this.screenWidth / 2 - w / 2 - 40, this.screenHeight / 2 + 20);
+            }
 
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
 
-        //  g2d.drawImage(FullHeart,26,30,40,40,null);
-        // g2d.drawImage(BlankHeart,0,0,null);
-        drawPlayerLife(g, playerLife);
+    public void drawTitleScreen(Graphics2D g2d) {
+        try {
+            pixelMplus = Font.createFont(Font.TRUETYPE_FONT, new File("src/assets/fonts/PixelMplus10-Regular.ttf")).deriveFont(90f);
+        } catch (FontFormatException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        g2d.setFont(pixelMplus);
+        String Text = "UUFO";
+        int w = g2d.getFontMetrics().stringWidth(Text);
+
+        int width = this.screenWidth / 2 - w / 2;
+        int height = this.screenHeight / 2 - 100;
+        // int h = g.getFontMetrics().stringHeight(Text);
+        g2d.setColor(new Color(27, 30, 35));
+        g2d.drawString(Text, width, height);
+        g2d.setColor(Color.white);
+        g2d.drawString(Text, width - 4, height - 4);
+
+        //NEW GAME
+        g2d.setFont(g2d.getFont().deriveFont(Font.TRUETYPE_FONT, 30f));
+        if (gameTitleCommand == 0) {
+            g2d.setFont(g2d.getFont().deriveFont(Font.BOLD, 30f));
+        }
+        Text = "NEW GAME";
+        width = screenWidth / 2 - g2d.getFontMetrics().stringWidth(Text) / 2;
+        height = height + 80;
+        g2d.setColor(new Color(27, 30, 35));
+        g2d.drawString(Text, width, height);
+        g2d.setColor(Color.white);
+        g2d.drawString(Text, width - 4, height - 4);
+
+
+        //HIGH SCORE
+
+        g2d.setFont(g2d.getFont().deriveFont(Font.TRUETYPE_FONT, 30f));
+        if (gameTitleCommand == 1) {
+            g2d.setFont(g2d.getFont().deriveFont(Font.BOLD));
+        }
+        Text = "HIGH SCORE";
+        width = screenWidth / 2 - g2d.getFontMetrics().stringWidth(Text) / 2;
+        height = height + 35;
+        g2d.setColor(new Color(27, 30, 35));
+        g2d.drawString(Text, width, height);
+        g2d.setColor(Color.white);
+        g2d.drawString(Text, width - 4, height - 4);
+
+        //QUIT
+
+        g2d.setFont(g2d.getFont().deriveFont(Font.TRUETYPE_FONT, 30f));
+        if (gameTitleCommand == 2) {
+            g2d.setFont(g2d.getFont().deriveFont(Font.BOLD, 30f));
+        }
+        Text = "QUIT";
+        width = screenWidth / 2 - g2d.getFontMetrics().stringWidth(Text) / 2;
+        height = height + 35;
+        g2d.setColor(new Color(27, 30, 35));
+        g2d.drawString(Text, width, height);
+        g2d.setColor(Color.white);
+        g2d.drawString(Text, width - 4, height - 4);
+
 
     }
 

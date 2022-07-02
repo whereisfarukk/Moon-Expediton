@@ -5,6 +5,13 @@ import java.awt.event.KeyListener;
 
 public class KeyHandler implements KeyListener {
     public boolean rightKeyPressed, leftKeyPressed, spaceKeyPressed;
+    GamePanel gp;
+    Player player;
+
+    public KeyHandler(GamePanel gp, Player player) {
+        this.gp = gp;
+        this.player = player;
+    }
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -14,6 +21,39 @@ public class KeyHandler implements KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         int code = e.getKeyCode();
+        //TITLE SELECT
+        if (gp.gameState == gp.titleState) {
+            if (code == KeyEvent.VK_UP) {
+                gp.gameTitleCommand--;
+                if (gp.gameTitleCommand < 0) {
+                    gp.gameTitleCommand = 2;
+                }
+            }
+
+            if (code == KeyEvent.VK_DOWN) {
+                gp.gameTitleCommand++;
+                if (gp.gameTitleCommand > 2) {
+                    gp.gameTitleCommand = 0;
+                }
+            }
+            if (code == KeyEvent.VK_ENTER) {
+                if (gp.gameTitleCommand == 0) {
+                    /**
+                     * Selecting play state
+                     */
+                    gp.gameState = gp.playState;
+                }
+                if (gp.gameTitleCommand == 1) {
+                    //CODE FOR HIGH SCORE
+                }
+                if (gp.gameTitleCommand == 2) {
+                    /**
+                     *  Exit the whole game
+                     */
+                    System.exit(0);
+                }
+            }
+        }
         if (code == KeyEvent.VK_LEFT) {
             leftKeyPressed = true;
         }
@@ -23,6 +63,35 @@ public class KeyHandler implements KeyListener {
         if (code == KeyEvent.VK_SPACE) {
             spaceKeyPressed = true;
         }
+        if (code == KeyEvent.VK_P) {
+            if (gp.gameState == gp.playState) {
+                gp.gameState = gp.pauseState;
+            }
+        }
+        /**
+         * Game over screen
+         */
+        if (gp.gameState == gp.gameOverState) {
+            if (code == KeyEvent.VK_UP && gp.gameOverCommand == 1) {
+                gp.gameOverCommand = 0;
+
+            }
+            if (code == KeyEvent.VK_DOWN && gp.gameOverCommand == 0) {
+                gp.gameOverCommand = 1;
+            }
+            if (code == KeyEvent.VK_ENTER) {
+                if (gp.gameOverCommand == 0) {
+                    player.setDefault();
+                    gp.gameState = gp.playState;
+                }
+                if (gp.gameOverCommand == 1) {
+                    player.setDefault();
+                    gp.gameState = gp.titleState;
+                }
+            }
+
+        }
+
     }
 
     @Override

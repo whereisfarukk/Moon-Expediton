@@ -18,14 +18,14 @@ public class MoonEater {
     CollisionRect rect;
     BufferedImage moonEater = null;
 
-    GamePanel gp = new GamePanel();
+    GamePanel gp= new GamePanel();
 
     public MoonEater() {
-        try {
-            moonEater = ImageIO.read(new File("src/assets/photos/moonEater.png"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+//        try {
+//            moonEater = ImageIO.read(new File("src/assets/photos/moonEater.png"));
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
         this.rect = new CollisionRect(0, 0, widthOfMoonEater, HeightOfMoonEater);
 
         t1 = new AffineTransform();
@@ -34,7 +34,16 @@ public class MoonEater {
         GeneralPath path1 = new GeneralPath();
         path1.append(rect.getPathIterator(t1), true);
         a1 = new Area(path1);
+        getMoonEaterImage();
 
+
+    }
+    public void getMoonEaterImage(){
+        try {
+            moonEater = ImageIO.read(new File("src/assets/photos/moonEater.png"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
     }
     public void update(int i) {
@@ -43,7 +52,7 @@ public class MoonEater {
          */
         this.x = i;
     }
-    public void ren(Graphics g) {
+    public void ren(Graphics g,GamePanel gp) {
         //MOON EATER COLLISION AREA CIRCULATE
 
         t1 = new AffineTransform();
@@ -58,6 +67,7 @@ public class MoonEater {
         AffineTransform t = AffineTransform.getTranslateInstance((gp.screenWidth / 2) + 100 - moonEater.getWidth() / 2, gp.screenHeight / 2 - moonEater.getHeight() - 92);
         t.rotate(Math.toRadians(x), moonEater.getWidth() / 2, moonEater.getHeight() + 92);
         g2d.drawImage(moonEater, t, null);
+
 
     }
 

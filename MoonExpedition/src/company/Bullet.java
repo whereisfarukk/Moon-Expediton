@@ -45,7 +45,7 @@ public class Bullet {
         /**
          * Reducing radius means the bullet is going to the centre of the moon.
          */
-        radius -= (2);
+        radius -= (4);
         x = (float) ((gp.screenWidth / 2) + 100 + radius * Math.cos(Math.toRadians(angleOfBullet - 90))) - 2; // 2 delete because of perfectly match with firing spot//
         y = (float) (gp.screenHeight / 2 + radius * Math.sin(Math.toRadians(angleOfBullet - 90))) - 3;
         at = new AffineTransform();

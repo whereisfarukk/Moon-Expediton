@@ -3,9 +3,10 @@ package company;
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 
 class Main {
-    public static void main(String s[]) {
+    public static void main(String s[]) throws IOException {
         JFrame window = new JFrame();
         window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         window.setResizable(false);

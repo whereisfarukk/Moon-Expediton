@@ -31,6 +31,13 @@ public class Sound {
             AudioInputStream ais = AudioSystem.getAudioInputStream(soundURL[i]);
             clip = AudioSystem.getClip();
             clip.open(ais);
+            /**
+             * when i = 4 means background music ,and background music need to reduce
+             */
+            if(i==4) {
+                FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+                gainControl.setValue(-20.0f);
+            }
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
