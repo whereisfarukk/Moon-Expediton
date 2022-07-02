@@ -225,7 +225,7 @@ public class GamePanel extends JPanel implements Runnable {
                     asteroidsToRemove.add(asteroid);
                     System.out.println("collied");
                     playerLife--;
-                    if (playerLife < 3) {
+                    if (playerLife < 0) {
                         gameState = gameOverState;
                     }
                 }
@@ -311,31 +311,41 @@ public class GamePanel extends JPanel implements Runnable {
              * UFO circulation Rendering
              */
             player.draw(g2d);
-//        AffineTransform t = AffineTransform.getTranslateInstance((screenWidth / 2) + 100 - UFO_img.getWidth() / 2, screenHeight / 2 - UFO_img.getHeight() - RADIUS);
-//        t.rotate(Math.toRadians(UFO_AngleChange), UFO_img.getWidth() / 2, UFO_img.getHeight() + RADIUS);
-//        g2d.drawImage(UFO_img, t, null);
 
 
             /**
              * Displaying 8-bit image for score
              */
-            try {
-                pixelMplus = Font.createFont(Font.TRUETYPE_FONT, new File("src/assets/fonts/PixelMplus10-Regular.ttf")).deriveFont(32f);
-                g2d.setFont(pixelMplus);
-                String SCORE = Integer.toString(score);
-                g2d.setColor(Color.white);
-                g2d.drawString("SCORE : " + SCORE, 26, 30);
-
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-
+            drawScoreScreen(g2d);
+            /**
+             * Displaying player life
+             */
             drawPlayerLife(g, playerLife);
+
+            /**
+             * Displaying Game over screen on top of main game screen
+             */
             if (gameState == gameOverState) {
                 drawGameOverScreen(g);
             }
         }
 
+    }
+
+    public void drawScoreScreen(Graphics2D g2d) {
+        /**
+         * Displaying 8-bit image for score
+         */
+        try {
+            pixelMplus = Font.createFont(Font.TRUETYPE_FONT, new File("src/assets/fonts/PixelMplus10-Regular.ttf")).deriveFont(32f);
+            g2d.setFont(pixelMplus);
+            String SCORE = Integer.toString(score);
+            g2d.setColor(Color.white);
+            g2d.drawString("SCORE : " + SCORE, 26, 30);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void drawGameOverScreen(Graphics g) {
@@ -355,7 +365,7 @@ public class GamePanel extends JPanel implements Runnable {
             g2d.drawString(Text, this.screenWidth / 2 - w / 2 - 4, this.screenHeight / 2 - 90 - 4);
 
 
-            pixelMplus = Font.createFont(Font.TRUETYPE_FONT, new File("src/assets/fonts/PixelMplus10-Regular.ttf")).deriveFont(50f);
+            pixelMplus = Font.createFont(Font.TRUETYPE_FONT, new File("src/assets/fonts/PixelMplus10-Regular.ttf")).deriveFont(45f);
             g2d.setFont(pixelMplus);
             Text = "Retry";
             w = g.getFontMetrics().stringWidth(Text);
@@ -368,7 +378,7 @@ public class GamePanel extends JPanel implements Runnable {
             }
 
 
-            pixelMplus = Font.createFont(Font.TRUETYPE_FONT, new File("src/assets/fonts/PixelMplus10-Regular.ttf")).deriveFont(50f);
+            pixelMplus = Font.createFont(Font.TRUETYPE_FONT, new File("src/assets/fonts/PixelMplus10-Regular.ttf")).deriveFont(45f);
             g2d.setFont(pixelMplus);
             Text = "Quit";
             //    w = g.getFontMetrics().stringWidth(Text);
@@ -387,7 +397,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     public void drawTitleScreen(Graphics2D g2d) {
         try {
-            pixelMplus = Font.createFont(Font.TRUETYPE_FONT, new File("src/assets/fonts/PixelMplus10-Regular.ttf")).deriveFont(90f);
+            pixelMplus = Font.createFont(Font.TRUETYPE_FONT, new File("src/assets/fonts/PixelMplus10-Regular.ttf")).deriveFont(95f);
         } catch (FontFormatException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
@@ -399,16 +409,16 @@ public class GamePanel extends JPanel implements Runnable {
 
         int width = this.screenWidth / 2 - w / 2;
         int height = this.screenHeight / 2 - 100;
-        // int h = g.getFontMetrics().stringHeight(Text);
         g2d.setColor(new Color(27, 30, 35));
+        g2d.setColor(Color.orange);
         g2d.drawString(Text, width, height);
-        g2d.setColor(Color.white);
+        g2d.setColor(Color.red);
         g2d.drawString(Text, width - 4, height - 4);
 
         //NEW GAME
         g2d.setFont(g2d.getFont().deriveFont(Font.TRUETYPE_FONT, 30f));
         if (gameTitleCommand == 0) {
-            g2d.setFont(g2d.getFont().deriveFont(Font.BOLD, 30f));
+            g2d.setFont(g2d.getFont().deriveFont(Font.BOLD, 35f));
         }
         Text = "NEW GAME";
         width = screenWidth / 2 - g2d.getFontMetrics().stringWidth(Text) / 2;
@@ -423,9 +433,22 @@ public class GamePanel extends JPanel implements Runnable {
 
         g2d.setFont(g2d.getFont().deriveFont(Font.TRUETYPE_FONT, 30f));
         if (gameTitleCommand == 1) {
-            g2d.setFont(g2d.getFont().deriveFont(Font.BOLD));
+            g2d.setFont(g2d.getFont().deriveFont(Font.BOLD, 35f));
         }
         Text = "HIGH SCORE";
+        width = screenWidth / 2 - g2d.getFontMetrics().stringWidth(Text) / 2;
+        height = height + 35;
+        g2d.setColor(new Color(27, 30, 35));
+        g2d.drawString(Text, width, height);
+        g2d.setColor(Color.white);
+        g2d.drawString(Text, width - 4, height - 4);
+
+        //ABOUT
+        g2d.setFont(g2d.getFont().deriveFont(Font.TRUETYPE_FONT, 30f));
+        if (gameTitleCommand == 2) {
+            g2d.setFont(g2d.getFont().deriveFont(Font.BOLD, 35f));
+        }
+        Text = "ABOUT";
         width = screenWidth / 2 - g2d.getFontMetrics().stringWidth(Text) / 2;
         height = height + 35;
         g2d.setColor(new Color(27, 30, 35));
@@ -436,8 +459,8 @@ public class GamePanel extends JPanel implements Runnable {
         //QUIT
 
         g2d.setFont(g2d.getFont().deriveFont(Font.TRUETYPE_FONT, 30f));
-        if (gameTitleCommand == 2) {
-            g2d.setFont(g2d.getFont().deriveFont(Font.BOLD, 30f));
+        if (gameTitleCommand == 3) {
+            g2d.setFont(g2d.getFont().deriveFont(Font.BOLD, 35f));
         }
         Text = "QUIT";
         width = screenWidth / 2 - g2d.getFontMetrics().stringWidth(Text) / 2;

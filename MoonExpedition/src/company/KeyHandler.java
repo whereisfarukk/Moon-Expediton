@@ -26,13 +26,13 @@ public class KeyHandler implements KeyListener {
             if (code == KeyEvent.VK_UP) {
                 gp.gameTitleCommand--;
                 if (gp.gameTitleCommand < 0) {
-                    gp.gameTitleCommand = 2;
+                    gp.gameTitleCommand = 3;
                 }
             }
 
             if (code == KeyEvent.VK_DOWN) {
                 gp.gameTitleCommand++;
-                if (gp.gameTitleCommand > 2) {
+                if (gp.gameTitleCommand > 3) {
                     gp.gameTitleCommand = 0;
                 }
             }
@@ -47,6 +47,9 @@ public class KeyHandler implements KeyListener {
                     //CODE FOR HIGH SCORE
                 }
                 if (gp.gameTitleCommand == 2) {
+                    //ABOUT THE  GAME
+                }
+                if (gp.gameTitleCommand == 3) {
                     /**
                      *  Exit the whole game
                      */
