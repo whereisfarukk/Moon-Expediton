@@ -14,7 +14,7 @@ src
 └── company
     ├── Asteroid.java
     ├── Bullet.java
-    ├── CollisiiionRect.java
+    ├── CollisionRect.java
     ├── GamePanel.java
     ├── KeyHandler.java
     ├── Main.java
